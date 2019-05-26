@@ -36,19 +36,16 @@ def binance_price(number=42):
     print ("Getting ", number, " EOSTUSD hourly prices...", sep="")
     candles = client.get_klines(symbol='EOSTUSD', interval=Client.KLINE_INTERVAL_1HOUR, limit=number) 
 
-    # Let's make it look nicer, a dataframe! Returns 11 columns and 42 rows (500 is default/max)
+    # Let's make it look nicer, a DataFrame.
     candles_df = df(candles)
 
-    # Send the date column (col 0) to the clean_dates function to return a Python readable date format as a DataFrame.
+    # Send the date column (col 0) to the clean_dates function to return a Python readable date format.
     good_date = clean_dates(candles_df[0])
 
     candles_df.pop(0)     # Remove column date
     candles_df.pop(11)    # Remove column 11 (docs say to ignore this column)
-
-    # final_df = candles_df.join(df_good_date)
     final_df = candles_df.join(good_date)
     final_df.set_index('date', inplace=True)
-
     final_df.columns = ['Open', 'High', 'Low', 'Close', 'Volume', 'Close Time', 'Asset Volume', 'Trades', 'Taker Base', 'Taker Quote']
     return final_df
 
