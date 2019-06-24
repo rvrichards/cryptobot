@@ -10,6 +10,10 @@ def authenticate():
     return Client(os.environ.get('COINBASE_KEY'), os.environ.get('COINBASE_SECRET'))
 
 
+def get_user_id(client):
+	return client.get_current_user()['id']
+
+
 # Retrieve the spot price of token in USD
 # Doesn't need authentication
 def get_token_price(token="EOS"):
@@ -38,7 +42,20 @@ def get_currencies():
 	return response.json()
 
 
-def get_account_info(gettall=False):
+def get_account_ids(gettall=False):
+	total = 0
+	ball = []
+	client = authenticate()
+	accounts = client.get_accounts()
+	for wallet in accounts.data:
+		if gettall:
+			ball.append(wallet['name'] + " - " + wallet['id'])
+		elif float(wallet['balance']['amount']) > 0.0:
+			ball.append(wallet['name'] + " - " + wallet['id'])
+	return ball
+
+
+def get_account_balances(gettall=False):
 	total = 0
 	ball = []
 	client = authenticate()
@@ -48,21 +65,26 @@ def get_account_info(gettall=False):
 			ball.append(wallet['name'] + " - " + wallet['balance']['amount'])
 		elif float(wallet['balance']['amount']) > 0.0:
 			ball.append(wallet['name'] + " - " + wallet['balance']['amount'])
-	return ball
+	return ball	
 
+
+# Test uses
 print ("Let's roll...")
-# pprint (get_account_info(True))
+client=authenticate()
+# pprint (get_account_ids(True))
+# pprint (get_account_balances())
 # print (get_token_price())
 # print (get_token_price("XR"))
 # pprint (get_currencies())
+# print (get_token_prices())
 
-print (get_token_prices())
-
-
-# pa=client.get_primary_account()
-# print ("\nPrimary Account:", pa)
+pa=client.get_primary_account()     # A call using https://github.com/coinbase/coinbase-python
+print ("\nPrimary Account:", pa)
 
 # user = client.get_current_user()
 # print ("\nCurrent user:", user)
 # print ("\nCurrent user json: ", json.dumps(user))
 # account.get_transactions()
+
+# print (get_user_id(authenticate()))
+
