@@ -1,8 +1,11 @@
 import os
 import pandas as pd
+import plotly.offline as py
+import plotly.graph_objs as go
 from binance.client import Client
 from datetime import datetime
 from pandas import DataFrame as df
+from pprint import pprint
 
 # Binance specific methods.
 # - def authenticate():
@@ -13,7 +16,7 @@ from pandas import DataFrame as df
 
 # Authenticate to Binance.
 def authenticate():
-    print ("Authenticating...")
+    print ("in authenticate...")
     return Client(api_key=os.environ.get('BINANCE_KEY'), api_secret=os.environ.get('BINANCE_SECRET'))
 
 
@@ -78,8 +81,24 @@ def get_x_info(token_symbol):
     return tokens_df
 
 
+
+# Returns a dictionary: keys: accountType, balances, canDeposit, ...
+# "balances" Format:  {'asset': 'EOS', 'free': '3.14159265', 'locked': '0.00000000'} 
+# Parameter gettall - get all balances, even 0. Default = No! Don't!
+def get_account_info(gettall=False):
+    client = authenticate()
+    account = client.get_account()
+    if gettall == False:
+        ball = account["balances"]
+        ball[:] = [tup for tup in ball if float(tup['free']) != 0.0 ]
+        account['balances']=ball
+    # return "All done"   #account
+    return account 
+
 # Test the methods.......
+print ("Lets go")
 # print (binance_price("test"))  
 # print(get_token_list())
-# print ("Lets go")
-# print ( get_x_info('EOS') )
+# print (get_x_info('EOS') )
+pprint (get_account_info())
+
