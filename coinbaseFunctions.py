@@ -4,6 +4,13 @@ import requests
 import json
 from pprint import pprint
 
+# Coinbase
+# account_id - is the account (wallet) to a specific token.
+#            - The EOS account is: efacbfc0-eaeb-5675-a72d-a8fcc597fe2e
+# user_id - is the user id of the user at coinbase. User many different accounts associated.
+#         - The User id is: aa1a4bc6-2d4e-5665-aeef-ee1a23418884
+
+
 # Authenticate to Coinbase.
 def authenticate():
     print ("in authenticate...")
@@ -42,6 +49,15 @@ def get_currencies():
 	return response.json()
 
 
+def get_account_id(token="EOS"):
+	client = authenticate()
+	accounts = client.get_accounts()
+	for wallet in accounts.data:
+		if wallet['currency'] == token:
+			return wallet['id'] 
+	return
+
+
 def get_account_ids(gettall=False):
 	total = 0
 	ball = []
@@ -70,7 +86,7 @@ def get_account_balances(gettall=False):
 
 # Test uses
 print ("Let's roll...")
-client=authenticate()
+# client=authenticate()
 # pprint (get_account_ids(True))
 # pprint (get_account_balances())
 # print (get_token_price())
@@ -78,8 +94,8 @@ client=authenticate()
 # pprint (get_currencies())
 # print (get_token_prices())
 
-pa=client.get_primary_account()     # A call using https://github.com/coinbase/coinbase-python
-print ("\nPrimary Account:", pa)
+# pa=client.get_primary_account()     # A call using https://github.com/coinbase/coinbase-python
+# print ("\nPrimary Account:", pa)
 
 # user = client.get_current_user()
 # print ("\nCurrent user:", user)
@@ -88,3 +104,4 @@ print ("\nPrimary Account:", pa)
 
 # print (get_user_id(authenticate()))
 
+# print (get_account_id("EOS"))
